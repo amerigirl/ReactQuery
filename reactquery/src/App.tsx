@@ -13,11 +13,10 @@ function App() {
   });
 
   const newPostMutation = useMutation({
-    mutationFn: title => {
-      return wait(1000).then(() =>
-      POSTS.push({id: 3, title }))
-    }
-  })
+    mutationFn: (title: string) => {
+      return wait(1000).then(() => POSTS.push({ id: 3, title }));
+    },
+  });
 
   if (postsQuery.isLoading) return <h1>Loading...</h1>;
   if (postsQuery.isError) {
@@ -25,14 +24,15 @@ function App() {
   }
   return (
     <>
-     {postsQuery.data?.map(post => (
-      <div key={post.id}>{post.title}</div>
-     ))}
-     <button onClick={()=> new }>
+      {postsQuery.data?.map((post) => (
+        <div key={post.id}>{post.title}</div>
+      ))}
+      {/* <button onClick={()=> new }>
       Add New
-     </button>
+     </button> */}
     </>
   );
+
   function wait(duration: number) {
     return new Promise((resolve) => setTimeout(resolve, duration));
   }
