@@ -1,5 +1,5 @@
 import "./App.css";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const POSTS = [
   { id: 1, title: "Post 1" },
@@ -7,6 +7,7 @@ const POSTS = [
 ];
 
 function App() {
+  const queryClient = useQueryClient();
   const postsQuery = useQuery({
     queryKey: ["posts"],
     queryFn: () => wait(1000).then(() => [...POSTS]),
@@ -14,7 +15,12 @@ function App() {
 
   const newPostMutation = useMutation({
     mutationFn: (title: string) => {
-      return wait(1000).then(() => POSTS.push({ id: 3, title }));
+      return wait(1000).then(() =>
+        POSTS.push({ id: crypto.randomUUID(), title })
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["posts"]);
     },
   });
 
@@ -27,9 +33,12 @@ function App() {
       {postsQuery.data?.map((post) => (
         <div key={post.id}>{post.title}</div>
       ))}
-      {/* <button onClick={()=> new }>
-      Add New
-     </button> */}
+      <button
+        disabled={newPostMutation.isLoading}
+        onClick={() => newPostMutation.mutate("New Post")}
+      >
+        Add New
+      </button>
     </>
   );
 
